@@ -129,7 +129,10 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   const decreaseLength = () => {
     setLength((prev) => {
       const newLength = prev - 1;
-      setCounter(newLength);
+
+      if (prev > 4) {
+        setCounter(newLength);
+      }
 
       return newLength;
     });
