@@ -56,8 +56,7 @@ interface HoldProps {
 type stepState = "breath" | "hold" | "breathOut";
 
 export const Hold: FC<HoldProps> = ({ className }) => {
-  localStorage.setItem("length", JSON.stringify(4));
-  const length2 = localStorage.getItem("length");
+  const myLength = localStorage.getItem("length");
 
   const [length, setLength] = useState(4);
   const [counter, setCounter] = useState(length);
@@ -120,6 +119,8 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   const addLength = () => {
     setLength((prev) => {
       const newLength = prev + 1;
+      localStorage.setItem("length", JSON.stringify(newLength));
+
       setCounter(newLength);
 
       return newLength;
@@ -129,8 +130,9 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   const decreaseLength = () => {
     setLength((prev) => {
       const newLength = prev - 1;
+      localStorage.setItem("length", JSON.stringify(newLength));
 
-      if (prev > 4) {
+      if (prev < 4) {
         setCounter(newLength);
       }
 
@@ -153,13 +155,6 @@ export const Hold: FC<HoldProps> = ({ className }) => {
     setCounter(length);
     makeCircleSmaller(circleRef.current, length);
   }, [length, circleRef]);
-
-  // const resetCircle = () => {
-  //   gsap.to(circleRef.current, {
-  //     scale: 1,
-  //     duration: 1,
-  //   })
-  // }
 
   const cleanTimer = () => {
     clearInterval(timer);
