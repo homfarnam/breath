@@ -1,8 +1,12 @@
 import React, { FC, useState, useRef, useEffect, useCallback } from "react";
 import styled from "styled-components";
-import gsap from "gsap";
 import classnames from "classnames";
 import Case from "case";
+import {
+  makeCircleBigger,
+  makeCircleShake,
+  makeCircleSmaller,
+} from "../../animations/AnimateCircle";
 
 const Circle = styled.div`
   width: 250px;
@@ -17,38 +21,6 @@ const ButtonsHolder = styled.div`
 
 let timer: any = null;
 
-function makeCircleBigger(circle: HTMLDivElement | null, duration: number) {
-  gsap.to(circle, {
-    scale: 1.5,
-    duration,
-  });
-}
-
-function makeCircleShake(circle: HTMLDivElement | null) {
-  gsap.to(circle, {
-    x: 3,
-    duration: 0.1,
-    delay: 0.1,
-  });
-  gsap.to(circle, {
-    x: -3,
-    duration: 0.1,
-    delay: 0.2,
-  });
-  gsap.to(circle, {
-    x: 3,
-    duration: 0.1,
-    delay: 0.3,
-  });
-}
-
-function makeCircleSmaller(circle: HTMLDivElement | null, duration: number) {
-  gsap.to(circle, {
-    scale: 1,
-    duration,
-  });
-}
-
 interface HoldProps {
   className?: String;
 }
@@ -56,9 +28,11 @@ interface HoldProps {
 type stepState = "breath" | "hold" | "breathOut";
 
 export const Hold: FC<HoldProps> = ({ className }) => {
-  const myLength = localStorage.getItem("length");
+  const DEFAULT_LENGTH = 4;
+  const INITIAL_LENGTH =
+    Number(localStorage.getItem("length")) || DEFAULT_LENGTH;
 
-  const [length, setLength] = useState(4);
+  const [length, setLength] = useState(INITIAL_LENGTH);
   const [counter, setCounter] = useState(length);
   const [step, setStep] = useState<stepState>("breath");
   const [isCounting, setIsCounting] = useState(false);
@@ -90,15 +64,21 @@ export const Hold: FC<HoldProps> = ({ className }) => {
     }
   );
 
-  const addButton = classnames("text-white px-5 py-1 rounded-full mx-1  ", {
-    "bg-blue-500": !isCounting,
-    "bg-blue-300": isCounting,
-  });
+  const addButton = classnames(
+    "text-white px-5 py-1 rounded-full mx-1 cursor-pointer ",
+    {
+      "bg-blue-500": !isCounting,
+      "bg-blue-300": isCounting,
+    }
+  );
 
-  const decreaseButton = classnames("text-white px-5 py-1 rounded-full mx-1 ", {
-    "bg-red-500": !isCounting,
-    "bg-red-300": isCounting,
-  });
+  const decreaseButton = classnames(
+    "text-white px-5 py-1 rounded-full mx-1 cursor-pointer ",
+    {
+      "bg-red-500": !isCounting,
+      "bg-red-300": isCounting,
+    }
+  );
 
   const startTimer = () => {
     // reset the step
@@ -121,6 +101,7 @@ export const Hold: FC<HoldProps> = ({ className }) => {
       const newLength = prev + 1;
       localStorage.setItem("length", JSON.stringify(newLength));
 
+      // update current lenght
       setCounter(newLength);
 
       return newLength;
@@ -130,13 +111,16 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   const decreaseLength = () => {
     setLength((prev) => {
       const newLength = prev - 1;
-      localStorage.setItem("length", JSON.stringify(newLength));
+      if (newLength >= DEFAULT_LENGTH) {
+        localStorage.setItem("length", JSON.stringify(newLength));
 
-      if (prev < 4) {
+        // update current lenght
         setCounter(newLength);
+
+        return newLength;
       }
 
-      return newLength;
+      return DEFAULT_LENGTH;
     });
   };
 
