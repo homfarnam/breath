@@ -259,6 +259,7 @@ export const Hold: FC<HoldProps> = ({ className }) => {
             className={decreaseButton}
             disabled={isCounting}
             onClick={decreaseRepeat}
+            name="btn"
           >
             -
           </button>
