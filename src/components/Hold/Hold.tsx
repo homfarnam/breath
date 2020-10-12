@@ -1,23 +1,14 @@
 import React, { FC, useState, useRef, useEffect, useCallback } from "react";
-import styled from "styled-components";
 import classnames from "classnames";
-import Case from "case";
 import {
   makeCircleBigger,
   makeCircleShake,
   makeCircleSmaller,
 } from "../../animations/AnimateCircle";
-
-const Circle = styled.div`
-  width: 250px;
-  height: 250px;
-`;
-
-const ButtonsHolder = styled.div`
-  button {
-    outline: none;
-  }
-`;
+import Counter from "../Counter/Counter";
+import Start from "../Start/Start";
+import AddLength from "../AddLength/AddLength";
+import Repeat from "../Repeat/Repeat";
 
 let timer: any = null;
 
@@ -189,68 +180,37 @@ export const Hold: FC<HoldProps> = ({ className }) => {
 
   return (
     <div className={`flex flex-col justify-center items-center   ${className}`}>
-      <div className="circle-holder relative flex items-center justify-center">
-        <Circle ref={circleRef} className={circleClassnames} />
-        <div className="absolute text-center h-100 w-100">
-          <h2 className="text-3xl font-semibold mb-2">{Case.capital(step)}</h2>
-          <span className="text-xl">{counter}</span>
-        </div>
-      </div>
+      <Counter
+        circleClassnames={circleClassnames}
+        circleRef={circleRef}
+        counter={counter}
+        step={step}
+      />
 
-      <ButtonsHolder className="flex flex-row mt-24">
-        <button
-          className={startButtonClassnames}
-          disabled={isCounting}
-          onClick={startTimer}
-        >
-          Start
-        </button>
+      <Start
+        isCounting={isCounting}
+        reset={reset}
+        resetButtonClasssnames={resetButtonClasssnames}
+        startButtonClassnames={startButtonClassnames}
+        startTimer={startTimer}
+      />
 
-        <button
-          className={resetButtonClasssnames}
-          onClick={reset}
-          disabled={!isCounting}
-        >
-          Reset
-        </button>
-      </ButtonsHolder>
+      <AddLength
+        addButton={addButton}
+        addLength={addLength}
+        decreaseButton={decreaseButton}
+        decreaseLength={decreaseLength}
+        isCounting={isCounting}
+      />
 
-      <ButtonsHolder className="flex flex-row mt-5">
-        <button className={addButton} disabled={isCounting} onClick={addLength}>
-          +
-        </button>
-
-        <button
-          className={decreaseButton}
-          disabled={isCounting}
-          onClick={decreaseLength}
-        >
-          -
-        </button>
-      </ButtonsHolder>
-
-      <div className="flex flex-col mt-10">
-        <p>Number of repetition: {repeat}</p>
-
-        <ButtonsHolder className="flex flex-row mt-5 justify-center">
-          <button
-            className={addButton}
-            disabled={isCounting}
-            onClick={addRepeat}
-          >
-            +
-          </button>
-
-          <button
-            className={decreaseButton}
-            disabled={isCounting}
-            onClick={decreaseRepeat}
-            name="btn"
-          >
-            -
-          </button>
-        </ButtonsHolder>
-      </div>
+      <Repeat
+        repeat={repeat}
+        isCounting={isCounting}
+        decreaseRepeat={decreaseRepeat}
+        addRepeat={addRepeat}
+        addButton={addButton}
+        decreaseButton={decreaseButton}
+      />
     </div>
   );
 };
