@@ -23,11 +23,16 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   const INITIAL_LENGTH =
     Number(localStorage.getItem("length")) || DEFAULT_LENGTH;
 
+  const DEFAULT_REPEAT = 3;
+  const INITIAL_REPEAT =
+    Number(localStorage.getItem("repeat")) || DEFAULT_REPEAT;
+
   const [length, setLength] = useState(INITIAL_LENGTH);
   const [counter, setCounter] = useState(length);
   const [step, setStep] = useState<stepState>("breath");
   const [isCounting, setIsCounting] = useState(false);
-  const [repeat, setRepeat] = useState<number>(4);
+  const [repeat, setRepeat] = useState<number>(INITIAL_REPEAT);
+  const [repeater, setRepeater] = useState<number>(0);
   const circleRef = useRef<HTMLDivElement>(null);
 
   const circleClassnames = classnames(
@@ -90,7 +95,7 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   const addLength = () => {
     setLength((prev) => {
       const newLength = prev + 1;
-      localStorage.setItem("length", JSON.stringify(newLength));
+      localStorage.setItem("length", newLength.toString());
 
       // update current lenght
       setCounter(newLength);
@@ -103,7 +108,7 @@ export const Hold: FC<HoldProps> = ({ className }) => {
     setLength((prev) => {
       const newLength = prev - 1;
       if (newLength >= DEFAULT_LENGTH) {
-        localStorage.setItem("length", JSON.stringify(newLength));
+        localStorage.setItem("length", newLength.toString());
 
         // update current lenght
         setCounter(newLength);
@@ -116,11 +121,25 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   };
 
   const addRepeat = () => {
-    setRepeat((prev) => prev + 1);
+    setRepeat((prev) => {
+      const next = prev + 1;
+      localStorage.setItem("repeat", next.toString());
+
+      return next;
+    });
   };
 
   const decreaseRepeat = () => {
-    setRepeat((prev) => prev - 1);
+    setRepeat((prev) => {
+      const next = prev - 1;
+
+      if (next >= DEFAULT_REPEAT) {
+        localStorage.setItem("repeat", next.toString());
+        return next;
+      }
+
+      return DEFAULT_REPEAT;
+    });
   };
 
   const reset = useCallback(() => {
@@ -128,6 +147,7 @@ export const Hold: FC<HoldProps> = ({ className }) => {
     setIsCounting(false);
     setStep("breath");
     setCounter(length);
+    setRepeater(0);
     makeCircleSmaller(circleRef.current, length);
   }, [length, circleRef]);
 
@@ -152,6 +172,7 @@ export const Hold: FC<HoldProps> = ({ className }) => {
           setCounter(length);
           return length;
         });
+        setRepeater((prev) => prev + 1);
       }
     }
   }, [isCounting, counter, step, length]);
@@ -169,14 +190,10 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   }, [isCounting, counter, step, length, circleRef]);
 
   useEffect(() => {
-    if (length + repeat < length) {
-      cleanTimer();
+    if (repeater === repeat) {
+      reset();
     }
-  }, [repeat, counter, length]);
-
-  // console.log("repeat: ", repeat);
-  // console.log("length", length);
-  // console.log("counter: ", counter);
+  }, [repeater, repeat, reset]);
 
   return (
     <div className={`flex flex-col justify-center items-center   ${className}`}>
