@@ -178,10 +178,14 @@ export const Hold: FC<HoldProps> = ({ className }) => {
   }, [isCounting, counter, step, length, circleRef]);
 
   useEffect(() => {
-    if (counter > repeat) {
+    if (length + repeat < length) {
       cleanTimer();
     }
-  }, [repeat, counter]);
+  }, [repeat, counter, length]);
+
+  // console.log("repeat: ", repeat);
+  // console.log("length", length);
+  // console.log("counter: ", counter);
 
   return (
     <div className={`flex flex-col justify-center items-center   ${className}`}>
